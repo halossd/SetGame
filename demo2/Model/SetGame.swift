@@ -7,27 +7,29 @@
 
 import Foundation
 
+typealias SetDeck = [Card]
+
+protocol SetGameDelegate {
+    func selectedCardsDissMatch(_ cards: [Card])
+    func selectedCardsDidMatch(_ cards: [Card])
+}
+
 class SetGame
 {
-    private(set) var cards = [Card]()
+    var delegate: SetGameDelegate?
+    
+    private(set) var deck = SetDeck()
     
     private(set) var selectedCards = [Card]()
     private(set) var tableCards = [Card]()
+    private(set) var matchedCards = [Card]()
     
     private(set) var score = 0
     
     var hintCards = [Int]()
     
     init() {
-        for number in Card.Number.all {
-            for shape in Card.Shape.all {
-                for color in Card.ShapeColor.all {
-                    for shading in Card.Shading.all {
-                        cards.append(Card(number: number, color: color, shape: shape, shading: shading))
-                    }
-                }
-            }
-        }
+        deck = makeDeck()
     }
     
     func hint(on showedCards: [Card]) {
@@ -55,20 +57,30 @@ class SetGame
     }
     
     func dealCards(forAmount amount: Int = 3) {
+        guard deck.count >= amount else {
+            for card in selectedCards {
+                let index = tableCards.firstIndex(of: card)!
+                tableCards.remove(at: index)
+            }
+            print("new : \(tableCards.count)")
+            return
+        }
+        
         var moreCards = [Card]()
+        
         for _ in 1...amount {
             if let card = draw() {
                 moreCards.append(card)
             }
         }
         
-        if !selectedCards.isEmpty, selectedCards.count == 3 {
-            selectedCards.forEach {
-                if let index = tableCards.firstIndex(of: $0) {
-                    tableCards[index] = moreCards.remove(at: moreCards.count.arc4racndom)
-                }
+        for (index, card) in tableCards.enumerated() {
+            if matchedCards.contains(card) {
+                tableCards[index] = moreCards.removeFirst()
             }
-        } else {
+        }
+        
+        if !moreCards.isEmpty {
             tableCards += moreCards
         }
     }
@@ -84,30 +96,56 @@ class SetGame
         
         if selectedCards.count == 3 {
             if isSet(on: selectedCards) {
-                dealCards()
+                matchedCards = selectedCards
+                delegate?.selectedCardsDidMatch(selectedCards)
+                
                 selectedCards = []
                 score += 4
+                replaceMatchedCards()
             } else {
                 score -= 2
+                delegate?.selectedCardsDissMatch(selectedCards)
                 selectedCards = []
             }
         }
     }
     
+    func replaceMatchedCards() {
+        guard matchedCards.count == 3 else { return }
+        dealCards()
+        matchedCards = []
+    }
+    
     func draw() -> Card? {
-        if cards.count > 0 {
-            return cards.remove(at: cards.count.arc4racndom)
+        if deck.count > 0 {
+            return deck.remove(at: deck.count.arc4racndom)
         } else {
             return nil
         }
     }
     
     func rest() {
+        deck = makeDeck()
         tableCards = []
         selectedCards = []
+        matchedCards = []
         score = 0
         hintCards = []
-        cards = []
+    }
+    
+    private func makeDeck() -> SetDeck {
+        var cards = SetDeck()
+        for number in Card.Number.all {
+            for shape in Card.Shape.all {
+                for color in Card.ShapeColor.all {
+                    for shading in Card.Shading.all {
+                        cards.append(Card(number: number, color: color, shape: shape, shading: shading))
+                    }
+                }
+            }
+        }
+        return cards
+
     }
 }
 

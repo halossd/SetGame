@@ -27,9 +27,10 @@ class SetCardView: UIView {
     var isSelected = false {
         didSet {
             if isSelected {
-                
+                layer.borderWidth = 3
+                layer.borderColor = UIColor.blue.cgColor
             } else {
-                
+                layer.borderColor = UIColor.clear.cgColor
             }
         }
     }
@@ -41,13 +42,13 @@ class SetCardView: UIView {
         return 0
     }
         
-    private var path: UIBezierPath? = UIBezierPath()
+    private var path: UIBezierPath?
     
     private var drawableRect: CGRect {
         let drawableWidth = frame.width * 0.8
-        let drawableHeight = frame.height * 0.9
+        let drawableHeight = frame.height * 0.95
         return CGRect(x: frame.width * 0.1,
-                      y: frame.height * 0.05,
+                      y: frame.height * 0.025,
                       width: drawableWidth,
                       height: drawableHeight)
     }
@@ -73,7 +74,9 @@ class SetCardView: UIView {
     }
 
     override func draw(_ rect: CGRect) {
-        layer.borderWidth = 1
+        layer.cornerRadius = frame.height * 0.15
+        layer.masksToBounds = true
+        
         guard card != nil else {
             return
         }
@@ -81,11 +84,11 @@ class SetCardView: UIView {
         if let color = color {
             switch color {
             case .red:
-                objectColor = .red
+                objectColor = UIColor(red: 255/255.0, green: 25/255.0, blue: 25/255.0, alpha: 1)
             case .blue:
-                objectColor = .blue
+                objectColor = UIColor(red: 86/255.0, green: 86/255.0, blue: 249/255.0, alpha: 1)
             case .green:
-                objectColor = .green
+                objectColor = UIColor(red: 37/255.0, green: 222/255.0, blue: 104/255.0, alpha: 1)
             }
         }
         
@@ -176,9 +179,9 @@ class SetCardView: UIView {
     
     private func drawRound(byAmount amount: Int) {
         let allSquareWidth = CGFloat(numberOfSymbols) * shapeWidth + CGFloat(numberOfSymbols - 1) * shapeHorizontalMargin
-        
         let beginX = (frame.width - allSquareWidth) / 2
         let currentShapeY = shapeVerticalMargin
+        path = UIBezierPath()
         
         for i in 0..<numberOfSymbols {
             let currentShapeX = beginX + (shapeWidth * CGFloat(i)) + CGFloat(i)*shapeHorizontalMargin

@@ -14,7 +14,7 @@ class CardsContainerView: UIView
     
     var buttons = [SetCardView]()
     
-    var grid = SetGrid(layout: SetGrid.Layout.aspectRatio(2.5))
+    var grid = SetGrid(layout: SetGrid.Layout.aspectRatio(2))
     
     var gridRect: CGRect {
       get {
@@ -25,6 +25,13 @@ class CardsContainerView: UIView
       }
     }
 
+    func prepareForRotation() {
+        for button in buttons {
+            button.transform = .identity
+            button.setNeedsDisplay()
+        }
+    }
+    
     /// Instantiates a new array of buttons with the specified count of elements.
     func makeCardViews(byAmount numberOfButtons: Int) -> [SetCardView] { return [] }
     
@@ -59,6 +66,30 @@ class CardsContainerView: UIView
         
         if grid.frame != gridRect {
             respositionViews()
+        }
+    }
+    
+    func removeInactiveCard() {
+        grid.cellCount = buttons.count
+        respositionViews()
+    }
+    
+    func clearCardContainer() {
+        buttons.forEach {
+            $0.removeFromSuperview()
+        }
+        buttons = []
+        grid.cellCount = 0
+        
+        setNeedsLayout()
+    }
+
+}
+
+extension UIView {
+    func removeAllSubViews() {
+        self.subviews.forEach {
+            $0.removeFromSuperview()
         }
     }
 }

@@ -81,6 +81,7 @@ struct SetGrid
     private mutating func recalculate() {
         switch layout {
         case .fixedCellSize(let cellSize):
+            print("fixedCellSize")
             if cellSize.width > 0 && cellSize.height > 0 {
                 calculatedDimensions.rowCount = Int(frame.height / cellSize.height)
                 calculatedDimensions.colCount = Int(frame.width / cellSize.width)
@@ -90,6 +91,7 @@ struct SetGrid
                 cellFrames.removeAll()
             }
         case .dimensions(let rowCount, let colCount):
+            print("dimensions")
             if rowCount > 0 && colCount > 0 {
                 calculatedDimensions.rowCount = rowCount
                 calculatedDimensions.colCount = colCount
@@ -131,7 +133,11 @@ struct SetGrid
         
         if cellCount > 0 {
             for _ in 0..<cellCount {
-                cellFrames.append(CGRect(origin: origin, size: cellSize))
+                var frame1 = CGRect(origin: origin, size: cellSize)
+                frame1 = frame1.insetBy(dx: cellSize.height * 0.03, dy: cellSize.height * 0.03)
+                cellFrames.append(frame1)
+
+//                cellFrames.append(CGRect(origin: origin, size: cellSize))
                 origin.x += cellSize.width
                 if round(origin.x) > round(frame.maxX - cellSize.width) {
                     origin.x = frame.origin.x + offset.dx
