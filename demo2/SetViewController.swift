@@ -17,6 +17,8 @@ class SetViewController: UIViewController, SetGameDelegate
     
     @IBOutlet weak var setView: SetCardsContainerView!
     
+    @IBOutlet weak var dealCardButton: UIButton!
+    @IBOutlet weak var newGameButton: UIButton!
     var cards = [Card]()
     var showedCards = [Card]()
     var selectedCards = [Card]()
@@ -26,6 +28,16 @@ class SetViewController: UIViewController, SetGameDelegate
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         setView.prepareForRotation()
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        let translatedDealOrigin = view.convert(dealCardButton.frame.origin, to: setView)
+        let translatedDealFrame = CGRect(origin: translatedDealOrigin, size: dealCardButton.frame.size)
+        setView.dealingFromFrame = translatedDealFrame
+        let translatedDiscardOrigin = view.convert(newGameButton.frame.origin, to: setView)
+        let translatedDiscardFrame = CGRect(origin: translatedDiscardOrigin, size: newGameButton.frame.size)
+        setView.discardToFrame = translatedDiscardFrame
     }
     
     override func viewDidLoad() {

@@ -33,6 +33,7 @@ class SetGame
     }
     
     func hint(on showedCards: [Card]) {
+        guard showedCards.count < 3 else { return }
         hintCards.removeAll()
         let f = showedCards.count.arc4racndom
         let firstCard = showedCards[f]
@@ -62,7 +63,6 @@ class SetGame
                 let index = tableCards.firstIndex(of: card)!
                 tableCards.remove(at: index)
             }
-            print("new : \(tableCards.count)")
             return
         }
         

@@ -35,6 +35,17 @@ class SetCardView: UIView {
         }
     }
     
+    var isActive = false
+    
+    var isFaceUp = false {
+        didSet {
+            if isFaceUp {
+                backgroundColor = .white
+            }
+            setNeedsDisplay()
+        }
+    }
+    
     private var numberOfSymbols: Int {
         if let nubmer = nubmer {
             return nubmer.rawValue
@@ -76,6 +87,11 @@ class SetCardView: UIView {
     override func draw(_ rect: CGRect) {
         layer.cornerRadius = frame.height * 0.15
         layer.masksToBounds = true
+        
+        if !isFaceUp {
+            backgroundColor = .gray
+            return
+        }
         
         guard card != nil else {
             return

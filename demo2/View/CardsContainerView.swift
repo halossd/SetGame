@@ -12,6 +12,10 @@ class CardsContainerView: UIView
 {
     @IBInspectable var nubmerOfCardsForDisplay: Int = 0
     
+    var dealingFromFrame: CGRect = .zero
+    
+    var discardToFrame: CGRect = .zero
+    
     var buttons = [SetCardView]()
     
     var grid = SetGrid(layout: SetGrid.Layout.aspectRatio(2))
@@ -35,10 +39,11 @@ class CardsContainerView: UIView
     /// Instantiates a new array of buttons with the specified count of elements.
     func makeCardViews(byAmount numberOfButtons: Int) -> [SetCardView] { return [] }
     
-    func addCards(byAmount amount: Int = 3) {
+    func addCards(byAmount amount: Int = 3, animated: Bool = false) {
         let cardViews = makeCardViews(byAmount: amount)
+        
         for cardView in cardViews {
-            cardView.backgroundColor = .white
+            cardView.isFaceUp = false
             addSubview(cardView)
             buttons.append(cardView)
         }
@@ -46,7 +51,13 @@ class CardsContainerView: UIView
         grid.cellCount += amount
         grid.frame = gridRect
         
-        respositionViews()
+        if animated {
+            dealCardsWithAnimation()
+        }
+    }
+    
+    func dealCardsWithAnimation() {
+        
     }
     
     func respositionViews() {
